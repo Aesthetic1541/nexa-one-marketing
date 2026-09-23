@@ -1,4 +1,3 @@
-
 from flask import Flask, render_template, jsonify
 import json
 from pathlib import Path
@@ -23,4 +22,4 @@ def summary():
     return jsonify(payload["stats"])
 
 if __name__ == "__main__":
-    app.run(debug=True, host="127.0.0.1", port=5000)
+    app.run(debug=True)
