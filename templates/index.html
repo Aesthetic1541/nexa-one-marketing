@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NEXA One — Marketing Intelligence</title>
+<meta name="description" content="NEXA One marketing analytics dashboard based on 200 market observations.">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<nav class="nav">
+  <div class="container nav-inner">
+    <a class="brand" href="#top">NEXA<span>ONE</span></a>
+    <div class="nav-links">
+      <a href="#analysis">Analysis</a><a href="#channels">Channels</a><a href="#customers">Customers</a>
+      <a href="#market">Market</a><a href="#strategy">Strategy</a>
+    </div>
+    <a class="btn" href="#simulator">Simulate →</a>
+  </div>
+</nav>
+
+<main id="top">
+<section class="hero">
+ <div>
+   <div class="eyebrow">Grand Theft Analytica 2.0</div>
+   <h1>Turn advertising data into <span class="gradient">growth decisions.</span></h1>
+   <p>Marketing intelligence for NEXA One — combining 200-market advertising data, statistical modelling, customer insights and market signals into one decision dashboard.</p>
+   <div class="hero-actions">
+     <a class="btn" href="#analysis">Explore the analysis ↓</a>
+     <a class="btn" href="#strategy">View strategy</a>
+   </div>
+   <p class="disclaimer">Historical associations are not causal proof. Strategic recommendations should be validated through controlled experiments.</p>
+ </div>
+ <div class="hero-visual">
+   <div class="orb"></div>
+   <div class="floating float1"><span class="tag">SALES SIGNAL</span><br><strong style="font-size:27px">r = {{ "%.3f"|format(stats.corr_total) }}</strong></div>
+   <div class="floating float2"><span class="tag">MARKETS</span><br><strong style="font-size:27px">{{ stats.markets }}</strong></div>
+   <div class="floating float3"><span class="tag">CHANNEL MODEL</span><br><strong style="font-size:27px">{{ "%.1f"|format(stats.r2_multi*100) }}% R²</strong></div>
+ </div>
+</section>
+
+<section style="padding-top:20px">
+ <div class="container">
+  <div class="kpi-grid">
+   <div class="kpi"><div class="value">{{ stats.markets }}</div><div class="label">Markets analysed</div></div>
+   <div class="kpi"><div class="value">{{ "%.3f"|format(stats.corr_total) }}</div><div class="label">Advertising–sales correlation</div></div>
+   <div class="kpi"><div class="value">{{ "%.1f"|format(stats.r2_total*100) }}%</div><div class="label">Simple model R²</div></div>
+   <div class="kpi"><div class="value">{{ "%.1f"|format(stats.r2_multi*100) }}%</div><div class="label">Channel model R²</div></div>
+  </div>
+ </div>
+</section>
+
+<section id="analysis">
+<div class="container">
+ <div class="section-head"><div><div class="eyebrow">01 / Data evidence</div><h2>Does advertising relate to sales?</h2></div>
+ <p class="lead">Total advertising expenditure is strongly positively associated with sales across the 200 observed markets.</p></div>
+ <div class="grid-2">
+  <div class="card chart-wrap"><canvas id="totalChart"></canvas></div>
+  <div class="card">
+   <h3>Simple linear regression</h3>
+   <div class="metric-row"><span>Correlation (r)</span><strong>{{ "%.3f"|format(stats.corr_total) }}</strong></div>
+   <div class="metric-row"><span>R²</span><strong>{{ "%.3f"|format(stats.r2_total) }}</strong></div>
+   <div class="metric-row"><span>Intercept</span><strong>{{ "%.3f"|format(stats.intercept) }}</strong></div>
+   <div class="metric-row"><span>Advertising coefficient</span><strong>{{ "%.4f"|format(stats.r2_total*0 + 0.0487) }}</strong></div>
+   <p class="insight">The simple model explains about <strong>75.3%</strong> of observed sales variation. The evidence supports a strong association, but not a claim that advertising alone causes sales.</p>
+  </div>
+ </div>
+</div>
+</section>
+
+<section id="channels">
+<div class="container">
+ <div class="section-head"><div><div class="eyebrow">02 / Channel intelligence</div><h2>Which channels matter?</h2></div>
+ <p class="lead">Correlation is only the first view. The multiple regression controls for the three channels simultaneously.</p></div>
+ <div class="grid-3">
+  <div class="card channel"><div class="icon">📺</div><h3>TV</h3><div class="corr">{{ "%.3f"|format(stats.corr_tv) }}</div><div class="muted">Correlation with sales</div><p class="good"><strong>Significant positive coefficient</strong></p><p>Strong broad-reach relationship. Suitable for awareness and major product campaigns.</p></div>
+  <div class="card channel"><div class="icon">📱</div><h3>Social Media</h3><div class="corr">{{ "%.3f"|format(stats.corr_social) }}</div><div class="muted">Correlation with sales</div><p class="good"><strong>Significant positive coefficient</strong></p><p>Strong evidence in the controlled model and useful for targeting, engagement and conversion.</p></div>
+  <div class="card channel"><div class="icon">📰</div><h3>Print</h3><div class="corr">{{ "%.3f"|format(stats.corr_print) }}</div><div class="muted">Correlation with sales</div><p class="warn"><strong>Not significant independently</strong></p><p>Reassess and test specific use cases rather than assuming the channel is universally ineffective.</p></div>
+ </div>
+ <div class="card" style="margin-top:20px">
+  <h3>Multiple regression coefficients</h3>
+  <div class="metric-row"><span>TV</span><strong>+{{ "%.4f"|format(stats.tv_coef) }}</strong></div>
+  <div class="metric-row"><span>Social Media</span><strong>+{{ "%.4f"|format(stats.social_coef) }}</strong></div>
+  <div class="metric-row"><span>Print</span><strong>{{ "%.4f"|format(stats.print_coef) }}</strong></div>
+  <p class="formula">Sales = {{ "%.3f"|format(stats.intercept) }} + {{ "%.4f"|format(stats.tv_coef) }}·TV + {{ "%.4f"|format(stats.social_coef) }}·Social + {{ "%.4f"|format(stats.print_coef) }}·Print</p>
+ </div>
+</div>
+</section>
+
+<section id="customers">
+<div class="container">
+ <div class="section-head"><div><div class="eyebrow">03 / Customer intelligence</div><h2>What should NEXA sell?</h2></div>
+ <p class="lead">Marketing should translate product specifications into customer outcomes: focus, immersion, comfort, reliability and value.</p></div>
+ <div class="grid-2">
+  <div class="card">
+   <div class="factor"><div class="factor-icon">🔇</div><div style="flex:1"><strong>Active Noise Cancellation</strong><div class="bar"><i style="width:95%"></i></div></div></div>
+   <div class="factor"><div class="factor-icon">🔊</div><div style="flex:1"><strong>Sound Quality</strong><div class="bar"><i style="width:94%"></i></div></div></div>
+   <div class="factor"><div class="factor-icon">🛋️</div><div style="flex:1"><strong>Comfort & Fit</strong><div class="bar"><i style="width:90%"></i></div></div></div>
+   <div class="factor"><div class="factor-icon">🔋</div><div style="flex:1"><strong>Battery Life</strong><div class="bar"><i style="width:86%"></i></div></div></div>
+   <div class="factor"><div class="factor-icon">💰</div><div style="flex:1"><strong>Price / Value</strong><div class="bar"><i style="width:86%"></i></div></div></div>
+   <div class="factor"><div class="factor-icon">🎙️</div><div style="flex:1"><strong>Call Quality</strong><div class="bar"><i style="width:78%"></i></div></div></div>
+  </div>
+  <div class="card">
+   <span class="tag">MARKETING TRANSLATION</span>
+   <h3 style="font-size:29px;margin-top:15px">Sell the outcome, not the specification.</h3>
+   <p class="insight"><strong>ANC → Focus</strong><br>Show a metro, café or airport becoming quieter.</p>
+   <p class="insight"><strong>Sound → Immersion</strong><br>Demonstrate music, movies and gaming experiences.</p>
+   <p class="insight"><strong>Battery → Freedom</strong><br>Show a full day of study, work and travel.</p>
+   <p class="insight"><strong>Comfort → Long sessions</strong><br>Position comfort around real-life usage.</p>
+   <p class="insight"><strong>Value → Justification</strong><br>Make the benefit-to-price story explicit.</p>
+  </div>
+ </div>
+</div>
+</section>
+
+<section id="market">
+<div class="container">
+ <div class="section-head"><div><div class="eyebrow">04 / Market intelligence</div><h2>Growth opportunity meets pressure.</h2></div>
+ <p class="lead">The current environment creates opportunities through technology and digital marketing, while price sensitivity, competition and component uncertainty create constraints.</p></div>
+ <div class="grid-2">
+  <div class="card"><span class="tag">OPPORTUNITY</span><h3>AI-enabled audio</h3><p>Adaptive audio, intelligent noise suppression, personalization and AI-assisted call experiences can become future differentiation areas.</p></div>
+  <div class="card"><span class="tag">OPPORTUNITY</span><h3>Targeted digital marketing</h3><p>Social platforms can connect specific product benefits with students, professionals, commuters and travelers through measurable campaigns.</p></div>
+  <div class="card"><span class="tag">CHALLENGE</span><h3>Selective consumer spending</h3><p>Consumers increasingly evaluate whether technology purchases justify their price. Value communication matters.</p></div>
+  <div class="card"><span class="tag">CHALLENGE</span><h3>Supply-chain pressure</h3><p>Component availability, memory demand, tariffs and logistics can increase costs and complicate inventory decisions.</p></div>
+ </div>
+</div>
+</section>
+
+<section id="strategy">
+<div class="container">
+ <div class="section-head"><div><div class="eyebrow">05 / Strategic recommendation</div><h2>Build awareness. Convert attention. Measure incrementality.</h2></div></div>
+ <div class="strategy">
+  <div class="card step"><div class="step-num">01 / TV</div><h3>Build awareness</h3><p>Use TV for broad reach, brand building, launches and memorable demonstrations of NEXA One's core benefits.</p></div>
+  <div class="card step"><div class="step-num">02 / SOCIAL</div><h3>Drive engagement & conversion</h3><p>Use creator content, product demonstrations, reviews, retargeting and performance campaigns.</p></div>
+  <div class="card step"><div class="step-num">03 / PRINT</div><h3>Reassess and test</h3><p>Reduce reliance unless a specific audience or partnership produces measurable incremental value.</p></div>
+ </div>
+ <div class="card" style="margin-top:20px;padding:32px">
+  <div class="eyebrow">CORE CAMPAIGN</div>
+  <h3 style="font-size:38px;margin:10px 0">Hear More. Block Less.</h3>
+  <p class="lead">Position NEXA One around the combination of <strong>ANC + sound quality + comfort + battery + value</strong>, then match each message to measurable media objectives.</p>
+ </div>
+</div>
+</section>
+
+<section id="simulator">
+<div class="container">
+ <div class="section-head"><div><div class="eyebrow">06 / Scenario lab</div><h2>Explore a model-based spend scenario.</h2></div>
+ <p class="lead">Adjust spending to see the historical regression model's estimated sales. This is a scenario tool, not a causal forecast.</p></div>
+ <div class="sim-grid">
+  <div class="card">
+   <div class="control"><label>TV spend <span id="tvVal">100</span> ($000s)</label><input id="tv" type="range" min="0" max="300" value="100"></div>
+   <div class="control"><label>Social Media spend <span id="socialVal">25</span> ($000s)</label><input id="social" type="range" min="0" max="60" value="25"></div>
+   <div class="control"><label>Print spend <span id="printVal">30</span> ($000s)</label><input id="print" type="range" min="0" max="120" value="30"></div>
+   <p class="formula">Estimated sales = intercept + TV coefficient + Social coefficient + Print coefficient</p>
+  </div>
+  <div class="card sim-result">
+   <div class="muted">MODEL-ESTIMATED SALES</div>
+   <div class="sim-sales"><span id="salesOut">0.0</span>K</div>
+   <div class="muted">thousand units</div>
+   <div style="margin-top:20px" class="tag">Historical model scenario</div>
+  </div>
+ </div>
+</div>
+</section>
+
+<section>
+<div class="container">
+ <div class="card">
+  <div class="eyebrow">LIMITATIONS</div>
+  <h3>Use the model as evidence, not as a guarantee.</h3>
+  <p class="muted">The dataset does not include product price, competitor advertising, distribution, promotions, consumer demographics, seasonality or other potentially important drivers. The regression therefore identifies statistical associations. Future allocation decisions should be validated with geographic holdouts, A/B tests, campaign-level ROAS and incremental-sales measurement.</p>
+ </div>
+</div>
+</section>
+</main>
+
+<footer>
+<div class="container">
+ <strong>NEXA ONE — Marketing Intelligence</strong>
+ <p>Grand Theft Analytica 2.0 · Built from the supplied 200-market advertising dataset.</p>
+ <p class="disclaimer">Research claims in the accompanying report should be linked to their cited external sources. Statistical figures shown here are calculated from the supplied dataset.</p>
+</div>
+</footer>
+
+<script>
+const DATA = {{ records|tojson }};
+const STATS = {{ stats|tojson }};
+
+function makeScatter(canvasId, xKey, yKey, labelX, labelY){
+  const ctx=document.getElementById(canvasId);
+  new Chart(ctx,{type:'scatter',data:{datasets:[{
+    label:'Markets',data:DATA.map(d=>({x:d[xKey],y:d[yKey]})),pointRadius:3,pointHoverRadius:6,
+    backgroundColor:'rgba(36,214,255,.55)'
+  }]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{
+    x:{title:{display:true,text:labelX,color:'#9ba8ba'},grid:{color:'rgba(255,255,255,.06)'},ticks:{color:'#9ba8ba'}},
+    y:{title:{display:true,text:labelY,color:'#9ba8ba'},grid:{color:'rgba(255,255,255,.06)'},ticks:{color:'#9ba8ba'}}
+  }}});
+}
+makeScatter('totalChart','total_ads','sales','Total advertising spend ($000s)','Sales (000 units)');
+
+const tv=document.getElementById('tv'), social=document.getElementById('social'), print=document.getElementById('print');
+const tvVal=document.getElementById('tvVal'), socialVal=document.getElementById('socialVal'), printVal=document.getElementById('printVal'), salesOut=document.getElementById('salesOut');
+function updateSim(){
+  tvVal.textContent=tv.value; socialVal.textContent=social.value; printVal.textContent=print.value;
+  const sales=STATS.intercept + STATS.tv_coef*+tv.value + STATS.social_coef*+social.value + STATS.print_coef*+print.value;
+  salesOut.textContent=sales.toFixed(2);
+}
+[tv,social,print].forEach(x=>x.addEventListener('input',updateSim)); updateSim();
+</script>
+</body>
+</html>
